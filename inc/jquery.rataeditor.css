@@ -1,0 +1,12 @@
+.rataed {background: #DDD;padding: 0.4em;border: 1px solid #CACACA;border-bottom: none;border-top-left-radius: 0.3em;border-top-right-radius: 0.3em;}
+.rataed .rataed-menu {height:1.5em}
+.rataed .rataed-menu abbr {cursor:pointer;margin: 0 1em 0 0;display: inline-block;border-radius: 0.3em;text-align: center;font-style: normal;height:16px;width:16px;text-decoration: none;border:0}
+.rataed .rataed-menu abbr:active {background-color: #a3a3a3}
+/* Icons collection: famfamfam silk icons http://www.famfamfam.com/lab/icons/silk/ */
+.rataed .rataed-menu abbr.ricn-b {background: url(jquery.rataeditor.png) 0 0;}
+.rataed .rataed-menu abbr.ricn-i {background: url(jquery.rataeditor.png) 0 -16px;}
+.rataed .rataed-menu abbr.ricn-p {background: url(jquery.rataeditor.png) 0 -32px;}
+.rataed .rataed-menu abbr.ricn-source {background: url(jquery.rataeditor.png) 0 -48px;}
+.rataed .rataed-menu abbr.ricn-img {background: url(jquery.rataeditor.png) 0 -64px;}
+.rataed .rataed-menu abbr.ricn-a {background: url(jquery.rataeditor.png) 0 -80px;}
+.rataed .rataed-editor {border:0;box-sizing: border-box;}
