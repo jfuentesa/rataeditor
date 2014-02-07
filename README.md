@@ -1,4 +1,4 @@
 rataeditor
 ==========
 
-redAlumnos TextArea WYSIWYG Editor
+redAlumnos TextArea WYSIWYG Editor (11Kb uncompressed)
