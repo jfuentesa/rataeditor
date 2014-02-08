@@ -1,6 +1,14 @@
 /**
  *
- * rataeditor: redAlumnos TextArea WYSIWYG Editor v0.9
+ * rataeditor: redAlumnos TextArea WYSIWYG Editor v20140207
+ *
+ * Changelog:
+ *
+ * - v20140207
+ *
+ * Added function rataeditor.append(TEXTAREA id, startTag, endTag) to insert HTML to any editor.
+ * Now every function receive jQuery rataed main object instead of the rataed-editor.
+ *
  *
  */
 
@@ -23,6 +31,45 @@ if (typeof rataeditor_i18n == 'undefined')
 var rataeditor = (function($){
     'use strict';
 
+    // Insert tag HTML to editor of a jQuery $rataed element
+    function insertHTMLTag($rataed, startTag, endTag)
+    {
+        var iframe = $rataed.find('.rataed-editor').get(0);
+        var win = iframe.contentWindow;
+        var doc = iframe.contentDocument || win.document;
+        var range, replacementText, replacedText;
+
+        if (win.getSelection) {
+            var sel = win.getSelection();
+            replacedText = win.getSelection().toString();
+            // If replaced text is empty, we get a sample text
+            if (replacedText == '') replacedText = rataeditor_i18n.sample;
+            // Delimited with tags
+            replacementText = startTag+replacedText+endTag;
+            if (sel.rangeCount) {
+                // Range.createContextualFragment() would be useful here but was until recently non-standard and not supported in all browsers (IE9, for one)
+                var el = document.createElement('div'), frag = document.createDocumentFragment(), node, lastNode;
+                el.innerHTML = replacementText;
+
+                range = sel.getRangeAt(0);
+                while ( (node = el.firstChild) ) {
+                    lastNode = frag.appendChild(node);
+                }
+                range.deleteContents();
+                range.insertNode(frag);
+            }
+        } else if (doc.selection && doc.selection.createRange) {
+            // <IE9
+            range = doc.selection.createRange();
+            replacedText = range.text;
+            // If replaced text is empty, we get a sample text
+            if (replacedText == '') replacedText = rataeditor_i18n.sample;
+            range.pasteHTML(startTag+replacedText+endTag);
+        }
+
+        return true;
+    }
+
 	$.fn.rataeditor = function(options) {
         'use strict';
 
@@ -32,10 +79,10 @@ var rataeditor = (function($){
             height          : '25em',
             iframestyle           : 'body {width:100%;margin: 1em 0;'+
                 'padding: 0;font-family: Verdana, sans-serif;'+
-                'background-color: #fff; overflow-x: hidden}'+
-                'a{}'+
-                'ul{display: inline-table;margin: auto;}'
-                +'img {max-width:75%}',
+                'background-color: color: #FFF;overflow-x: hidden}'+
+                'a{color: #B1C5BC}'+
+                'ul{display: inline-table;margin: auto;}' +
+                'img {max-width:75%}',
             keyup           : null,
             // List of default functions
             // id, name, css icon, style, unused, unused, unused, unused, function
@@ -45,49 +92,9 @@ var rataeditor = (function($){
                 p : ['p',rataeditor_i18n.paragraph,'ricn-p','','','','','',function($rata){insertHTMLTag($rata, '<p>', '</p>');}],
                 img : ['img',rataeditor_i18n.image,'ricn-img','float:right','','','','',function($rata){var url = prompt(rataeditor_i18n.imageurl, '');if (url) insertHTMLTag($rata, '<img src="'+url+'" />', '');}],
                 a : ['a',rataeditor_i18n.link,'ricn-a','','','','','',function($rata){var url = prompt(rataeditor_i18n.imageurl, '');if (url) insertHTMLTag($rata, '<a href="'+url+'">', '</a>');}],
-                source : ['source',rataeditor_i18n.html,'ricn-source','float:right','','','','',function($rata, $textarea){$rata.slideToggle(); $textarea.slideToggle();}]
+                source : ['source',rataeditor_i18n.html,'ricn-source','float:right','','','','',function($rata, $textarea){$rata.find('.rataed-editor').slideToggle(); $textarea.slideToggle();}]
             }
         }, options);
-
-        // INTERNAL FUNCTIONS
-
-        function insertHTMLTag($element, startTag, endTag)
-        {
-            var iframe = $element.get(0);
-            var win = iframe.contentWindow;
-            var doc = iframe.contentDocument || win.document;
-            var range, replacementText, replacedText;
-
-            if (win.getSelection) {
-                var sel = win.getSelection();
-                replacedText = win.getSelection().toString();
-                // If replaced text is empty, we get a sample text
-                if (replacedText == '') replacedText = rataeditor_i18n.sample;
-                // Delimited with tags
-                replacementText = startTag+replacedText+endTag;
-                if (sel.rangeCount) {
-                    // Range.createContextualFragment() would be useful here but was until recently non-standard and not supported in all browsers (IE9, for one)
-                    var el = document.createElement('div'), frag = document.createDocumentFragment(), node, lastNode;
-                    el.innerHTML = replacementText;
-
-                    range = sel.getRangeAt(0);
-                    while ( (node = el.firstChild) ) {
-                        lastNode = frag.appendChild(node);
-                    }
-                    range.deleteContents();
-                    range.insertNode(frag);
-                }
-            } else if (doc.selection && doc.selection.createRange) {
-                // <IE9
-                range = doc.selection.createRange();
-                replacedText = range.text;
-                // If replaced text is empty, we get a sample text
-                if (replacedText == '') replacedText = rataeditor_i18n.sample;
-                range.pasteHTML(startTag+replacedText+endTag);
-            }
-
-            return true;
-        }
 
         // Create editors for every TEXTAREA
 		var rtrn = this.each(function(){
@@ -138,7 +145,7 @@ var rataeditor = (function($){
                 rataeditor.updateTextarea($(this).data('target'));
             });
 
-            // Ocultamos TEXTAREA
+            // Hide current TEXTAREA
             $t.hide();
 		});
 
@@ -149,7 +156,7 @@ var rataeditor = (function($){
             var functionname = $t.data('function'),                         // Get the function name
                 target = $t.closest('.rataed').data('target'),              // Get target TEXTAREA as DOM element
                 $target = $(target),                                        // Get target TEXTAREA as jQuery object
-                $rata = $t.closest('.rataed').find('.rataed-editor');       // Get IFRAME editor
+                $rata = $t.closest('.rataed'); //.find('.rataed-editor');       // Get IFRAME editor
 
             // Select function to execute
             $.each(config.functions, function(index, value){
@@ -180,6 +187,14 @@ var rataeditor = (function($){
         updateTextarea: function(id) {
             // Copy IFRAME's BODY (.rataed-editor) to TEXTAREA's HTML
             $(id).val($(".rataed[data-target='"+id+"']").find('.rataed-editor').contents().find('body').html());
+        },
+
+        // Put HTML tag into the selected 'id'
+        append: function(id, startTag, endTag) {
+            if (typeof startTag == 'undefined') startTag = '';
+            if (typeof endTag == 'undefined') endTag = '';
+            var $rata = $(".rataed[data-target='"+id+"']");
+            insertHTMLTag($rata, startTag, endTag);
         }
     };
 })(jQuery);
