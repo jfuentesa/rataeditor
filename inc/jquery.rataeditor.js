@@ -1,4 +1,4 @@
-/**
+﻿/**
  *
  * rataeditor: redAlumnos TextArea WYSIWYG Editor v20140207
  *
@@ -22,6 +22,7 @@ if (typeof rataeditor_i18n == 'undefined')
         paragraph   : 'Párrafo',
         HTML        : 'HTML',
         link        : 'Enlace',
+	linkurl     : 'URL',
         image       : 'Imagen',
         url         : 'Dirección URL',
         imageurl    : 'Dirección de la imagen'
@@ -79,9 +80,9 @@ var rataeditor = (function($){
             height          : '25em',
             iframestyle           : 'body {width:100%;margin: 1em 0;'+
                 'padding: 0;font-family: Verdana, sans-serif;'+
-                'background-color: color: #FFF;overflow-x: hidden}'+
+                'background-color: #FFF;overflow-x: hidden}'+
                 'a{color: #B1C5BC}'+
-                'ul{display: inline-table;margin: auto;}' +
+                'ul{display: inline-table;margin: auto;}'+
                 'img {max-width:75%}',
             keyup           : null,
             // List of default functions
@@ -91,7 +92,7 @@ var rataeditor = (function($){
                 i : ['i',rataeditor_i18n.italic,'ricn-i','','','','','',function($rata){insertHTMLTag($rata, '<i>', '</i>');}],
                 p : ['p',rataeditor_i18n.paragraph,'ricn-p','','','','','',function($rata){insertHTMLTag($rata, '<p>', '</p>');}],
                 img : ['img',rataeditor_i18n.image,'ricn-img','float:right','','','','',function($rata){var url = prompt(rataeditor_i18n.imageurl, '');if (url) insertHTMLTag($rata, '<img src="'+url+'" />', '');}],
-                a : ['a',rataeditor_i18n.link,'ricn-a','','','','','',function($rata){var url = prompt(rataeditor_i18n.imageurl, '');if (url) insertHTMLTag($rata, '<a href="'+url+'">', '</a>');}],
+                a : ['a',rataeditor_i18n.link,'ricn-a','','','','','',function($rata){var url = prompt(rataeditor_i18n.linkurl, '');if (url) insertHTMLTag($rata, '<a href="'+url+'">', '</a>');}],
                 source : ['source',rataeditor_i18n.html,'ricn-source','float:right','','','','',function($rata, $textarea){$rata.find('.rataed-editor').slideToggle(); $textarea.slideToggle();}]
             }
         }, options);
