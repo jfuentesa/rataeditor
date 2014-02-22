@@ -49,7 +49,7 @@ You can pass new functions and buttons with **opts.functions**. Every element of
 
 ## Installation
 
-Optionally include your own i18n file, include jQuery (cnd/local), jquery.rataeditor.js and jquery.rataeditor.css
+Optionally include your own i18n file, include jQuery (cdn/local), jquery.rataeditor.js and jquery.rataeditor.css
     
     // Optional
     <script src="inc/jquery.rataeditor.i18n.js"></script>
